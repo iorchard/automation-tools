@@ -1,0 +1,23 @@
+--- seba-in-a-box/Makefile.bak	2019-01-11 14:46:41.412726879 +0900
++++ seba-in-a-box/Makefile	2019-01-11 14:47:59.889853277 +0900
+@@ -45,16 +45,16 @@
+ $(M)/setup:
+ 	mkdir -p $(M)
+ 	sudo apt update
+-	sudo apt install -y httpie jq software-properties-common
++	sudo apt install -y httpie jq software-properties-common apt-transport-https ca-certificates curl
+ 	sudo swapoff -a
+-	sudo iptables -P FORWARD ACCEPT
+ 	touch $@
+ 
+ /usr/bin/docker: | $(M)/setup
+-	sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 0EBFCD88
+-	sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(shell lsb_release -cs) stable"
++	curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
++	sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(shell lsb_release -cs) stable"
+ 	sudo apt update
+ 	sudo apt install -y "docker-ce=${DOCKER_VERSION}*"
++	sudo iptables -P FORWARD ACCEPT
+ 
+ /usr/bin/kubeadm: | $(M)/setup /usr/bin/docker
+ 	curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
